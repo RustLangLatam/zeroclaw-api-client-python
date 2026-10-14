@@ -35,10 +35,7 @@
 
 `zeroclaw-api-client` is a typed, resilient, async Python client for the
 [ZeroClaw](https://github.com/zeroclaw-labs/zeroclaw) gateway: its HTTP API,
-its Server-Sent Events stream and its WebSocket chat. It is the Python port
-of [zeroclaw-api-client-rust](https://github.com/RustLangLatam/zeroclaw-api-client-rust)
-and [zeroclaw-api-client-go](https://github.com/RustLangLatam/zeroclaw-api-client-go),
-with the same surface, behavior and tests.
+its Server-Sent Events stream and its WebSocket chat.
 
 > An independent, community-maintained client. It is not affiliated with or
 > endorsed by ZeroClaw Labs; ZeroClaw is a trademark of ZeroClaw Labs.
@@ -230,6 +227,15 @@ uv sync && uv run pytest
 Targets the ZeroClaw **0.8.5** gateway; see
 [Compatibility](https://github.com/RustLangLatam/zeroclaw-api-client-python/blob/main/docs/book/src/reference/compatibility.md)
 for the builds it is verified against and the routes that need a newer one.
+
+## Other languages
+
+The same client, with the same surface, behavior and tests:
+
+| Language | Repository | Install |
+|---|---|---|
+| Rust | [zeroclaw-api-client-rust](https://github.com/RustLangLatam/zeroclaw-api-client-rust) | `cargo add zeroclaw-api-client` |
+| Go | [zeroclaw-api-client-go](https://github.com/RustLangLatam/zeroclaw-api-client-go) | `go get github.com/RustLangLatam/zeroclaw-api-client-go` |
 
 ## Contributing
 
