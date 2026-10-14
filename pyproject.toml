@@ -1,0 +1,97 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zeroclaw-api-client"
+dynamic = ["version"]
+description = "Independent, typed, resilient async Python client for the ZeroClaw gateway: HTTP API, events and chat."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT OR Apache-2.0"
+license-files = ["LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+authors = [{ name = "RustLangLatam", email = "rust.lang.latam@gmail.com" }]
+keywords = ["zeroclaw", "agents", "ai", "gateway", "sdk", "client", "asyncio"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
+]
+dependencies = [
+  "httpx>=0.27,<1",
+  "pydantic>=2.7,<3",
+  "tenacity>=9.0,<10",
+  "aiolimiter>=1.1,<2",
+  "purgatory>=3.0,<4",
+  "websockets>=13.0,<18",
+]
+
+[project.urls]
+Homepage = "https://github.com/RustLangLatam/zeroclaw-api-client-python"
+Documentation = "https://github.com/RustLangLatam/zeroclaw-api-client-python/tree/main/docs/book/src"
+Issues = "https://github.com/RustLangLatam/zeroclaw-api-client-python/issues"
+Changelog = "https://github.com/RustLangLatam/zeroclaw-api-client-python/blob/main/CHANGELOG.md"
+
+[dependency-groups]
+dev = [
+  "pytest>=8",
+  "pytest-asyncio>=1.0",
+  "pytest-cov>=5",
+  "ruff>=0.6",
+  "mypy>=1.11",
+  "cryptography>=43",
+]
+
+[tool.hatch.version]
+path = "src/zeroclaw_client/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/zeroclaw_client"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md", "CHANGELOG.md", "LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = ["live: runs against a real gateway (ZEROCLAW_URL, ZEROCLAW_TOKEN)"]
+addopts = "-m 'not live'"
+filterwarnings = ["error"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ASYNC", "PT", "C4", "PIE", "RET", "D"]
+ignore = ["D105", "D107", "D203", "D213", "D413", "RUF022"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]
+"examples/**" = ["D100", "D103"]
+"scripts/**" = ["D"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+files = ["src", "tests", "examples"]
+
+[[tool.mypy.overrides]]
+module = ["purgatory.*", "aiolimiter.*"]
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["zeroclaw_client"]
+branch = true

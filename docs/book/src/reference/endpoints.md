@@ -1,0 +1,165 @@
+# Endpoint map
+
+Every gateway route the client calls, with the module and method that call
+it. The table is generated from the code: each public method's docstring names
+its route, and `scripts/endpoint-map.py` collects them.
+
+Routes the client deliberately does not call:
+
+- inbound webhooks (`/whatsapp`, `/linq/{alias}`, `/nextcloud-talk/{alias}`,
+  `/webhook/gmail`, the coding-agent hook under `/hooks/`, and the SOP trigger ingress
+  `/sop/{path}`): providers and external systems call them, not clients;
+- `/api/plugins`, which only a `plugins-wasm` build has: not covered yet;
+- the bundled web UI (`/_app/*`) and the HTML API explorer (`/api/docs`);
+- the daemon's own protocols: `/acp` (zerocode) and `/ws/nodes` (nodes).
+
+| Method | Path | Module | Function |
+|---|---|---|---|
+| `POST` | `/a2a/{alias}` | `webhook.py` | `WebhookAPI.a2a_send` |
+| `GET` | `/a2a/{alias}/.well-known/agent-card.json` | `webhook.py` | `WebhookAPI.agent_card` |
+| `GET` | `/admin/paircode` | `pairing.py` | `PairingAPI.admin_code` |
+| `POST` | `/admin/paircode/new` | `pairing.py` | `PairingAPI.admin_new_code` |
+| `POST` | `/admin/reload` | `system.py` | `SystemAPI.reload` |
+| `POST` | `/admin/shutdown` | `system.py` | `SystemAPI.shutdown` |
+| `POST` | `/admin/sop/approve` | `sops.py` | `SopsAPI.approve` |
+| `POST` | `/admin/sop/deny` | `sops.py` | `SopsAPI.deny` |
+| `GET` | `/admin/sop/pending` | `sops.py` | `SopsAPI.pending` |
+| `GET` | `/api/agents/{alias}/skills` | `agents.py` | `AgentAPI.skills` |
+| `GET` | `/api/agents/{alias}/workspace/list` | `agents.py` | `AgentAPI.list_files` |
+| `POST` | `/api/agents/{alias}/workspace/mkdir` | `agents.py` | `AgentAPI.make_dir` |
+| `POST` | `/api/agents/{alias}/workspace/move` | `agents.py` | `AgentAPI.move_path` |
+| `DELETE` | `/api/agents/{alias}/workspace/path` | `agents.py` | `AgentAPI.remove_path` |
+| `GET` | `/api/agents/{alias}/workspace/read` | `agents.py` | `AgentAPI.read_file` |
+| `GET` | `/api/browse` | `files.py` | `FilesAPI.list` |
+| `POST` | `/api/browse/mkdir` | `files.py` | `FilesAPI.make_dir` |
+| `DELETE` | `/api/browse/rmdir` | `files.py` | `FilesAPI.remove_dir` |
+| `GET` | `/api/canvas` | `canvas.py` | `CanvasAPI.list` |
+| `DELETE` | `/api/canvas/{id}` | `canvas.py` | `CanvasAPI.clear` |
+| `GET` | `/api/canvas/{id}` | `canvas.py` | `CanvasAPI.current` |
+| `POST` | `/api/canvas/{id}` | `canvas.py` | `CanvasAPI.publish` |
+| `GET` | `/api/canvas/{id}/history` | `canvas.py` | `CanvasAPI.history` |
+| `GET` | `/api/channels` | `channels.py` | `ChannelsAPI.list` |
+| `POST` | `/api/channels/bind` | `channels.py` | `ChannelsAPI.bind` |
+| `POST` | `/api/channels/{channel}/relink` | `channels.py` | `ChannelsAPI.relink` |
+| `GET` | `/api/channels/{channel}/rooms` | `channels.py` | `ChannelsAPI.rooms` |
+| `POST` | `/api/channels/{channel}/rooms` | `channels.py` | `ChannelsAPI.create_room` |
+| `POST` | `/api/channels/{channel}/rooms/{room}/invites` | `channels.py` | `ChannelsAPI.invite` |
+| `GET` | `/api/channels/{channel}/rooms/{room}/members` | `channels.py` | `ChannelsAPI.room_members` |
+| `DELETE` | `/api/channels/{channel}/rooms/{room}/members/{user}` | `channels.py` | `ChannelsAPI.remove_member` |
+| `POST` | `/api/channels/{channel}/send` | `channels.py` | `ChannelsAPI.send` |
+| `GET` | `/api/cli-tools` | `system.py` | `SystemAPI.cli_tools` |
+| `GET` | `/api/config` | `config.py` | `ConfigAPI.snapshot` |
+| `OPTIONS` | `/api/config` | `config.py` | `ConfigAPI.schema` |
+| `PATCH` | `/api/config` | `config.py` | `ConfigAPI.patch` |
+| `GET` | `/api/config/agent-options` | `config.py` | `ConfigAPI.agent_options` |
+| `GET` | `/api/config/catalog` | `config.py` | `ConfigAPI.catalog` |
+| `GET` | `/api/config/catalog/models` | `config.py` | `ConfigAPI.catalog_models` |
+| `GET` | `/api/config/delete-plan` | `config.py` | `ConfigAPI.delete_plan` |
+| `GET` | `/api/config/drift` | `config.py` | `ConfigAPI.drift` |
+| `POST` | `/api/config/init` | `config.py` | `ConfigAPI.init` |
+| `GET` | `/api/config/list` | `config.py` | `ConfigAPI.list` |
+| `DELETE` | `/api/config/map-key` | `config.py` | `ConfigAPI.delete_map_key` |
+| `POST` | `/api/config/map-key` | `config.py` | `ConfigAPI.create_map_key` |
+| `GET` | `/api/config/map-keys` | `config.py` | `ConfigAPI.map_keys` |
+| `POST` | `/api/config/migrate` | `config.py` | `ConfigAPI.migrate` |
+| `POST` | `/api/config/model-providers/{type}/{alias}/refresh-context-window` | `config.py` | `ConfigAPI.refresh_context_window` |
+| `DELETE` | `/api/config/prop` | `config.py` | `ConfigAPI.reset` |
+| `GET` | `/api/config/prop` | `config.py` | `ConfigAPI.get` |
+| `OPTIONS` | `/api/config/prop` | `config.py` | `ConfigAPI.prop_schema` |
+| `PUT` | `/api/config/prop` | `config.py` | `ConfigAPI.set` |
+| `GET` | `/api/config/reload-status` | `config.py` | `ConfigAPI.pending_reload` |
+| `POST` | `/api/config/rename-map-key` | `config.py` | `ConfigAPI.rename_map_key` |
+| `GET` | `/api/config/resolve-alias-source` | `config.py` | `ConfigAPI.alias_values` |
+| `GET` | `/api/config/sections` | `config.py` | `ConfigAPI.sections` |
+| `GET` | `/api/config/sections/{section}` | `config.py` | `ConfigAPI.section_items` |
+| `POST` | `/api/config/sections/{section}/items/{key}` | `config.py` | `ConfigAPI.select_section_item` |
+| `GET` | `/api/config/status` | `config.py` | `ConfigAPI.status` |
+| `GET` | `/api/config/templates` | `config.py` | `ConfigAPI.templates` |
+| `GET` | `/api/cost` | `cost.py` | `CostAPI.agent` |
+| `GET` | `/api/cost` | `cost.py` | `CostAPI.summary` |
+| `GET` | `/api/cron` | `cron.py` | `CronAPI.list` |
+| `POST` | `/api/cron` | `cron.py` | `CronAPI.create` |
+| `GET` | `/api/cron/settings` | `cron.py` | `CronAPI.settings` |
+| `PATCH` | `/api/cron/settings` | `cron.py` | `CronAPI.update_settings` |
+| `DELETE` | `/api/cron/{id}` | `cron.py` | `CronAPI.delete` |
+| `PATCH` | `/api/cron/{id}` | `cron.py` | `CronAPI.update` |
+| `POST` | `/api/cron/{id}/run` | `cron.py` | `CronAPI.run` |
+| `GET` | `/api/cron/{id}/runs` | `cron.py` | `CronAPI.runs` |
+| `GET` | `/api/devices` | `pairing.py` | `PairingAPI.devices` |
+| `POST` | `/api/devices/me/capabilities` | `pairing.py` | `PairingAPI.set_capabilities` |
+| `DELETE` | `/api/devices/{id}` | `pairing.py` | `PairingAPI.revoke_device` |
+| `POST` | `/api/devices/{id}/token/rotate` | `pairing.py` | `PairingAPI.rotate_device_token` |
+| `POST` | `/api/doctor` | `system.py` | `SystemAPI.doctor` |
+| `GET` | `/api/events` | `events.py` | `EventsAPI.subscribe` |
+| `GET` | `/api/events/history` | `events.py` | `EventsAPI.history` |
+| `GET` | `/api/health` | `system.py` | `SystemAPI.runtime_health` |
+| `GET` | `/api/integrations` | `system.py` | `SystemAPI.integrations` |
+| `GET` | `/api/integrations/settings` | `system.py` | `SystemAPI.integration_settings` |
+| `GET` | `/api/logs` | `system.py` | `SystemAPI.logs` |
+| `GET` | `/api/memory` | `memory.py` | `MemoryAPI.search` |
+| `POST` | `/api/memory` | `memory.py` | `MemoryAPI.store` |
+| `DELETE` | `/api/memory/{key}` | `memory.py` | `MemoryAPI.forget` |
+| `GET` | `/api/openapi.json` | `system.py` | `SystemAPI.openapi` |
+| `POST` | `/api/pair` | `pairing.py` | `PairingAPI.pair` |
+| `POST` | `/api/pairing/initiate` | `pairing.py` | `PairingAPI.new_code` |
+| `GET` | `/api/personality` | `agents.py` | `AgentAPI.personality_files` |
+| `GET` | `/api/personality/templates` | `agents.py` | `AgentAPI.personality_templates` |
+| `GET` | `/api/personality/{filename}` | `agents.py` | `AgentAPI.personality` |
+| `PUT` | `/api/personality/{filename}` | `agents.py` | `AgentAPI.write_personality` |
+| `POST` | `/api/quickstart/apply` | `quickstart.py` | `QuickstartAPI.apply` |
+| `POST` | `/api/quickstart/dismiss` | `quickstart.py` | `QuickstartAPI.dismiss` |
+| `POST` | `/api/quickstart/fields` | `quickstart.py` | `QuickstartAPI.fields` |
+| `GET` | `/api/quickstart/state` | `quickstart.py` | `QuickstartAPI.state` |
+| `POST` | `/api/quickstart/validate` | `quickstart.py` | `QuickstartAPI.validate` |
+| `GET` | `/api/sessions` | `sessions.py` | `SessionsAPI.list` |
+| `GET` | `/api/sessions/running` | `sessions.py` | `SessionsAPI.running` |
+| `DELETE` | `/api/sessions/{id}` | `sessions.py` | `SessionsAPI.delete` |
+| `PUT` | `/api/sessions/{id}` | `sessions.py` | `SessionsAPI.rename` |
+| `POST` | `/api/sessions/{id}/abort` | `sessions.py` | `SessionsAPI.abort` |
+| `GET` | `/api/sessions/{id}/messages` | `sessions.py` | `SessionsAPI.messages` |
+| `POST` | `/api/sessions/{id}/messages` | `sessions.py` | `SessionsAPI.add_message` |
+| `GET` | `/api/sessions/{id}/state` | `sessions.py` | `SessionsAPI.state` |
+| `GET` | `/api/skills/bundles` | `skills.py` | `SkillsAPI.bundles` |
+| `GET` | `/api/skills/bundles/{bundle}/skills` | `skills.py` | `SkillsAPI.list` |
+| `POST` | `/api/skills/bundles/{bundle}/skills` | `skills.py` | `SkillsAPI.create` |
+| `DELETE` | `/api/skills/bundles/{bundle}/skills/{name}` | `skills.py` | `SkillsAPI.delete` |
+| `GET` | `/api/skills/bundles/{bundle}/skills/{name}` | `skills.py` | `SkillsAPI.read` |
+| `PUT` | `/api/skills/bundles/{bundle}/skills/{name}` | `skills.py` | `SkillsAPI.write` |
+| `GET` | `/api/skills/slash-option-kinds` | `skills.py` | `SkillsAPI.slash_option_kinds` |
+| `GET` | `/api/sops` | `sops.py` | `SopsAPI.list` |
+| `POST` | `/api/sops` | `sops.py` | `SopsAPI.create` |
+| `POST` | `/api/sops/graph-draft` | `sops.py` | `SopsAPI.graph_draft` |
+| `GET` | `/api/sops/graph-legend` | `sops.py` | `SopsAPI.graph_legend` |
+| `GET` | `/api/sops/runs` | `sops.py` | `SopsAPI.runs` |
+| `GET` | `/api/sops/trigger-sources` | `sops.py` | `SopsAPI.trigger_sources` |
+| `POST` | `/api/sops/wire-draft` | `sops.py` | `SopsAPI.wire_draft` |
+| `DELETE` | `/api/sops/{name}` | `sops.py` | `SopsAPI.delete` |
+| `PUT` | `/api/sops/{name}` | `sops.py` | `SopsAPI.save` |
+| `GET` | `/api/sops/{name}/full` | `sops.py` | `SopsAPI.get` |
+| `GET` | `/api/sops/{name}/graph` | `sops.py` | `SopsAPI.graph` |
+| `POST` | `/api/sops/{name}/run` | `sops.py` | `SopsAPI.run` |
+| `POST` | `/api/sops/{name}/runs/{run_id}/cancel` | `sops.py` | `SopsAPI.cancel` |
+| `POST` | `/api/sops/{name}/runs/{run_id}/decide` | `sops.py` | `SopsAPI.decide` |
+| `GET` | `/api/sops/{name}/runs/{run_id}/overlay` | `sops.py` | `SopsAPI.run_overlay` |
+| `GET` | `/api/status` | `system.py` | `SystemAPI.status` |
+| `GET` | `/api/tools` | `system.py` | `SystemAPI.tools` |
+| `POST` | `/api/tools/param-options` | `system.py` | `SystemAPI.tool_param_options` |
+| `GET` | `/api/tuis` | `system.py` | `SystemAPI.tuis` |
+| `POST` | `/api/upload` | `files.py` | `FilesAPI.upload_image` |
+| `GET` | `/api/version/check` | `system.py` | `SystemAPI.version_check` |
+| `POST` | `/api/version/upgrade` | `system.py` | `SystemAPI.upgrade` |
+| `GET` | `/api/version/upgrade/status` | `system.py` | `SystemAPI.upgrade_status` |
+| `POST` | `/api/webauthn/auth/finish` | `webauthn.py` | `WebAuthnAPI.auth_finish` |
+| `POST` | `/api/webauthn/auth/start` | `webauthn.py` | `WebAuthnAPI.auth_start` |
+| `GET` | `/api/webauthn/credentials` | `webauthn.py` | `WebAuthnAPI.credentials` |
+| `DELETE` | `/api/webauthn/credentials/{id}` | `webauthn.py` | `WebAuthnAPI.delete_credential` |
+| `POST` | `/api/webauthn/register/finish` | `webauthn.py` | `WebAuthnAPI.register_finish` |
+| `POST` | `/api/webauthn/register/start` | `webauthn.py` | `WebAuthnAPI.register_start` |
+| `GET` | `/health` | `system.py` | `SystemAPI.health` |
+| `GET` | `/metrics` | `system.py` | `SystemAPI.metrics` |
+| `POST` | `/pair` | `pairing.py` | `PairingAPI.pair_legacy` |
+| `GET` | `/pair/code` | `pairing.py` | `PairingAPI.initial_code` |
+| `POST` | `/webhook` | `webhook.py` | `WebhookAPI.send` |
+| `GET` | `/ws/canvas/{id}` | `canvas.py` | `CanvasAPI.watch` |
+| `GET` | `/ws/chat` | `_client.py` | `Client.chat` |
+| `GET` | `/ws/sops/runs` | `sops.py` | `SopsAPI.watch_runs` |
