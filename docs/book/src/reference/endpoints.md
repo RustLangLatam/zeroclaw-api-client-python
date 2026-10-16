@@ -41,12 +41,6 @@ Routes the client deliberately does not call:
 | `GET` | `/api/channels` | `channels.py` | `ChannelsAPI.list` |
 | `POST` | `/api/channels/bind` | `channels.py` | `ChannelsAPI.bind` |
 | `POST` | `/api/channels/{channel}/relink` | `channels.py` | `ChannelsAPI.relink` |
-| `GET` | `/api/channels/{channel}/rooms` | `channels.py` | `ChannelsAPI.rooms` |
-| `POST` | `/api/channels/{channel}/rooms` | `channels.py` | `ChannelsAPI.create_room` |
-| `POST` | `/api/channels/{channel}/rooms/{room}/invites` | `channels.py` | `ChannelsAPI.invite` |
-| `GET` | `/api/channels/{channel}/rooms/{room}/members` | `channels.py` | `ChannelsAPI.room_members` |
-| `DELETE` | `/api/channels/{channel}/rooms/{room}/members/{user}` | `channels.py` | `ChannelsAPI.remove_member` |
-| `POST` | `/api/channels/{channel}/send` | `channels.py` | `ChannelsAPI.send` |
 | `GET` | `/api/cli-tools` | `system.py` | `SystemAPI.cli_tools` |
 | `GET` | `/api/config` | `config.py` | `ConfigAPI.snapshot` |
 | `OPTIONS` | `/api/config` | `config.py` | `ConfigAPI.schema` |

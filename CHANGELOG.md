@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 uses [Semantic Versioning](https://semver.org/).
 
+## 0.2.0 - 2026-10-16
+
+### Removed
+
+- **Breaking:** `ChannelsAPI.send`, `rooms`, `create_room`, `room_members`,
+  `invite` and `remove_member`, with their models `RoomSummary`,
+  `RoomMember`, `Participant` and `CreatedRoom`. Their routes
+  (`/api/channels/{channel}/send` and `/api/channels/{channel}/rooms…`) only
+  exist in a fork, never in the official ZeroClaw gateway, which declined
+  them ([zeroclaw-labs/zeroclaw#11434](https://github.com/zeroclaw-labs/zeroclaw/issues/11434)).
+  The client now covers only the official gateway.
+
 ## 0.1.0 - 2026-10-14
 
 First release: the Python port of

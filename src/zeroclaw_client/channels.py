@@ -1,16 +1,13 @@
-"""Channels (WhatsApp, Telegram, …): their state, sending through them, group chats and members.
+"""Channels (WhatsApp, Telegram, …): their state, identities and logins.
 
 Gateway handlers: ``crates/zeroclaw-gateway/src/api.rs`` and ``api_config.rs``
 (bind). A channel is named ``type.alias``, as :meth:`ChannelsAPI.list`
-returns it. Sending and managing rooms need pairing on and the channel listed
-in ``[gateway] send_channels``; reading rooms needs pairing only. Errors on
-these routes carry the channel: ``{"channel": …, "error": …}``.
+returns it.
 """
 
 from __future__ import annotations
 
 import builtins
-from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from ._model import Model
@@ -22,11 +19,7 @@ __all__ = [
     "Bound",
     "Channel",
     "ChannelsAPI",
-    "CreatedRoom",
-    "Participant",
     "Relinked",
-    "RoomMember",
-    "RoomSummary",
 ]
 
 
@@ -86,50 +79,6 @@ class Relinked(Model):
     note: str | None = None
 
 
-class RoomSummary(Model):
-    """A group chat."""
-
-    #: The id in the channel's addressing (``…@g.us`` on WhatsApp).
-    id: str
-    #: The name (the WhatsApp group subject).
-    name: str
-    #: The member count.
-    participants: int
-
-
-class RoomMember(Model):
-    """A member of a group chat."""
-
-    #: The member: ``+<digits>`` on WhatsApp when the number is known.
-    id: str
-    #: Whether they administer the group.
-    admin: bool
-
-
-class Participant(Model):
-    """What happened to someone added to a group chat."""
-
-    #: Who.
-    user: str
-    #: ``added``, ``invited``, ``refused`` or ``failed``.
-    outcome: str
-    #: Why, when it did not work.
-    detail: str | None = None
-
-
-class CreatedRoom(Model):
-    """The result of :meth:`ChannelsAPI.create_room`."""
-
-    #: The channel.
-    channel: str
-    #: The new room's id.
-    room: str
-    #: Always ``created``.
-    outcome: str
-    #: What happened to each invitee.
-    participants: list[Participant] | None = None
-
-
 class ChannelsAPI:
     """The channel endpoints (``/api/channels``), from :attr:`Client.channels`."""
 
@@ -154,67 +103,3 @@ class ChannelsAPI:
         POST /api/channels/{channel}/relink.
         """
         return await self._c._call("POST", ["api", "channels", channel, "relink"], Relinked)
-
-    async def send(self, channel: str, to: str, content: str, thread_id: str | None = None) -> None:
-        """Send plain text to ``to``, with no agent turn (POST /api/channels/{channel}/send).
-
-        Without ``thread_id`` it is sent outside a thread.
-        """
-        body = {"to": to, "content": content, "thread_id": thread_id or None}
-        await self._c._request("POST", ["api", "channels", channel, "send"], json_body=body)
-
-    async def rooms(self, channel: str) -> builtins.list[RoomSummary]:
-        """Return the group chats the running channel takes part in.
-
-        GET /api/channels/{channel}/rooms.
-        """
-        return await self._c._field(
-            "GET", ["api", "channels", channel, "rooms"], "rooms", list[RoomSummary]
-        )
-
-    async def create_room(
-        self,
-        channel: str,
-        name: str,
-        topic: str | None = None,
-        invites: Sequence[str] = (),
-    ) -> CreatedRoom:
-        """Create a group chat and invite ``invites`` (POST /api/channels/{channel}/rooms).
-
-        Invitees are phone numbers on WhatsApp, which are also allowed to
-        talk to the channel. Without ``topic`` none is set.
-        """
-        body = {"name": name, "topic": topic or None, "invites": builtins.list(invites)}
-        return await self._c._call(
-            "POST", ["api", "channels", channel, "rooms"], CreatedRoom, json_body=body
-        )
-
-    async def room_members(self, channel: str, room: str) -> builtins.list[RoomMember]:
-        """Return a group chat's members (GET /api/channels/{channel}/rooms/{room}/members)."""
-        return await self._c._field(
-            "GET",
-            ["api", "channels", channel, "rooms", room, "members"],
-            "members",
-            list[RoomMember],
-        )
-
-    async def invite(self, channel: str, room: str, user: str) -> Participant:
-        """Add or invite ``user`` to a group chat.
-
-        POST /api/channels/{channel}/rooms/{room}/invites.
-        """
-        return await self._c._call(
-            "POST",
-            ["api", "channels", channel, "rooms", room, "invites"],
-            Participant,
-            json_body={"user": user},
-        )
-
-    async def remove_member(self, channel: str, room: str, user: str) -> None:
-        """Remove a member from a group chat.
-
-        DELETE /api/channels/{channel}/rooms/{room}/members/{user}.
-        """
-        await self._c._request(
-            "DELETE", ["api", "channels", channel, "rooms", room, "members", user]
-        )

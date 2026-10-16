@@ -37,11 +37,10 @@ read like the gateway's routes:
 ```python
 async with Client("http://127.0.0.1:42617", token="zc_…") as client:
     channels = await client.channels.list()
-    rooms = await client.channels.rooms("whatsapp.main")
     await client.config.set("agents.helper.model", "gpt-5.4-mini")
     async with await client.chat("helper") as chat:
         reply = await chat.ask("Hi")
-    print(len(channels), len(rooms), reply.full_response)
+    print(len(channels), reply.full_response)
 ```
 
 Every call is a coroutine to `await`, and a failure raises a
