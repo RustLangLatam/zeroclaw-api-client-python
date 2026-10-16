@@ -204,7 +204,7 @@ class Client:
 
     @property
     def channels(self) -> ChannelsAPI:
-        """The channel endpoints (``/api/channels``)."""
+        """The channels and their group chats endpoints (``/api/channels``)."""
         return ChannelsAPI(self)
 
     @property

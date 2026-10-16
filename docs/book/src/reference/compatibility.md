@@ -2,13 +2,24 @@
 
 ## ZeroClaw versions
 
-The client targets the official ZeroClaw **0.8.5** gateway
-([zeroclaw-labs/zeroclaw](https://github.com/zeroclaw-labs/zeroclaw), tag
-`v0.8.5`), whose router is the
+The client targets the ZeroClaw **0.8.5** gateway. It is verified against the
+RustLangLatam fork's production build, `0.8.5+unified.13` (branch
+`fix/whatsapp-silence-stopped-channel`), whose router is the
 [source of truth](../architecture/decisions/ADR-001-gateway-is-the-source-of-truth.md)
-for every request and response shape here. It covers only routes that exist
-upstream or are proposed there in a pull request; routes a fork adds on its
-own are left out.
+for every request and response shape here.
+
+Against an upstream ZeroClaw 0.8.5 build everything works except these
+routes, which the fork adds; upstream answers them with its web UI fallback
+or 404:
+
+| Route | Method |
+|---|---|
+| `POST /api/channels/{channel}/send` | `client.channels.send` |
+| `GET /api/channels/{channel}/rooms` | `client.channels.rooms` |
+| `POST /api/channels/{channel}/rooms` | `client.channels.create_room` |
+| `GET /api/channels/{channel}/rooms/{room}/members` | `client.channels.room_members` |
+| `POST /api/channels/{channel}/rooms/{room}/invites` | `client.channels.invite` |
+| `DELETE /api/channels/{channel}/rooms/{room}/members/{user}` | `client.channels.remove_member` |
 
 Some routes exist only when the gateway is built with a feature: WebAuthn
 (`webauthn`) and A2A (`a2a`). Without it they answer 404.

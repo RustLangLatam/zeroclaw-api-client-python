@@ -93,7 +93,7 @@ When the gateway changes, one place changes.
   |---|---|
   | `config` | per-field reads and writes, atomic JSON Patch, map aliases (agents, providers, channels), drift, catalogs, setup sections |
   | `pairing` | pairing codes, bearer tokens, paired devices |
-  | `channels` | channel state, identity binding, relinking |
+  | `channels` | channel state, sending, group chats and their members, identity binding, relinking |
   | `chat()` | agent chat over WebSocket: streamed replies, tool calls, tool approvals |
   | `sessions`, `events` | transcripts, session state, the live Server-Sent Events stream |
   | `agent()`, `files`, `skills` | agent workspaces, personality files, shared files, image uploads, skill bundles |
@@ -146,7 +146,7 @@ When the gateway changes, one place changes.
 
 ```text
  your code
-    │  await client.channels.list()
+    │  await client.channels.rooms("whatsapp.main")
     ▼
  Client ── resource attributes (config, channels, chat, …) ── pydantic requests/responses
     │
@@ -193,6 +193,7 @@ Runnable scripts under [`examples/`](https://github.com/RustLangLatam/zeroclaw-a
 | `status.py` | version, model and channels |
 | `pairing.py` | exchanging a pairing code for a token |
 | `config.py` | reading fields, listing agents, an atomic patch |
+| `group_chats.py` | channels, their group chats and members |
 | `events.py` | following the live event stream, reconnecting |
 | `chat.py` | streaming an agent's reply over the WebSocket |
 | `announce.py` | posting on a channel through a one-off cron job |

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import AsyncIterator, Awaitable, Callable
+from functools import partial
 
 import pytest
 
@@ -85,6 +86,16 @@ async def test_live_every_read_decodes(live_client: Client) -> None:
     await check("sops.runs", client.sops.runs)
     await check("canvas.list", client.canvas.list)
     await check("quickstart.state", client.quickstart.state)
+
+    for ch in await client.channels.list():
+        try:
+            rooms = await client.channels.rooms(ch.name)
+        except Exception:
+            continue
+        print(f"ok      rooms of {ch.name}: {len(rooms)}")
+        if rooms:
+            members = partial(client.channels.room_members, ch.name, rooms[0].id)
+            await check("room_members", members)
 
     sessions = await client.sessions.list()
     if sessions:
